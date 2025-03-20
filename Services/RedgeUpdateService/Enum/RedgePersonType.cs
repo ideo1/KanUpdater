@@ -4,14 +4,14 @@ using Newtonsoft.Json.Converters;
 namespace KanUpdater.Services.RedgeUpdateService.Enum
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum RedgeContentType
+    public enum RedgePersonType
     {
-        SERIES,
-        SEASON,
-        EPISODE,
-        MOVIE,
-        LIVE,
-        ARTICLE,
-        PLAYLIST
+        ACTOR,
+        AUTHOR,
+        COMPOSER,
+        DIRECTOR,
+        PRESENTER,
+        PRODUCER,
+        SCRIPTWRITER
     }
 }

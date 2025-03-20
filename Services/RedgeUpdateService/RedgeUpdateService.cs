@@ -1,4 +1,5 @@
-﻿using KanUpdater.Services.RedgeUpdateService.Models;
+﻿using KanUpdater.Services.RedgeUpdateService.Enum;
+using KanUpdater.Services.RedgeUpdateService.Models;
 using Umbraco.Cms.Core.Services;
 
 namespace KanUpdater.Services.RedgeUpdateService
@@ -10,7 +11,7 @@ namespace KanUpdater.Services.RedgeUpdateService
         {
             _contentService = contentService;
         }
-        public RedgeUpdateRequestModel GetRedgeUpdateModel(int contentId)
+        public RedgeUpdateRequestModel? GetRedgeUpdateModel(int contentId)
         {
             var content = _contentService.GetById(contentId);
 
@@ -22,7 +23,8 @@ namespace KanUpdater.Services.RedgeUpdateService
             return new RedgeUpdateRequestModel() 
             {
                 ExternalId = content.Id,
-                Type = Enum.RedgeContentType.ARTICLE
+                Type = Enum.RedgeContentType.ARTICLE,
+                Platforms = new List<RedgePlatform>() { RedgePlatform.IOS_KIDS }
             };
         }
     }

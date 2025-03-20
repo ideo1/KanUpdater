@@ -4,6 +4,6 @@ namespace KanUpdater.Services.RedgeUpdateService
 {
     public interface IRedgeUpdateService
     {
-        RedgeUpdateRequestModel GetRedgeUpdateModel(int contentId);
+        RedgeUpdateRequestModel? GetRedgeUpdateModel(int contentId);
     }
 }
