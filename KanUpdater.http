@@ -1,0 +1,6 @@
+@KanUpdater_HostAddress = http://localhost:5241
+
+GET {{KanUpdater_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
