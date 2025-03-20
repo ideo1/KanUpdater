@@ -33,7 +33,7 @@ namespace KanUpdater.Controllers
                 return NotFound();
             }
 
-            return Ok(request.Id);
+            return Ok(result);
         }
     }
 }

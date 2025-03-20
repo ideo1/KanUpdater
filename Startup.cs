@@ -1,19 +1,12 @@
 ﻿using Examine;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Events;
-using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.Sync;
-using Umbraco.Cms.Infrastructure.DependencyInjection;
-using Umbraco.Cms.Infrastructure.Examine.DependencyInjection;
 using static Umbraco.Cms.Core.Constants;
-using System.Linq;
 using Umbraco.Cms.Core.Cache;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 namespace KanUpdater;
 
@@ -32,16 +25,17 @@ public class Startup
     {
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Carole Umbraco APIs", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Kan Umbraco APIs", Version = "v1" });
         });
         services.AddUmbraco(_env, _config)
         .AddBackOffice()
-        //.AddExamineIndexes()
         .AddComposers()
         .Build();
 
-        services.AddControllers();
-        //services.AddEndpointsApiExplorer();
+        services.AddControllers().AddJsonOptions(x =>
+        {
+            x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        }); ;
     }
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {

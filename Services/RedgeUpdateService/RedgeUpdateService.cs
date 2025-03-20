@@ -19,7 +19,11 @@ namespace KanUpdater.Services.RedgeUpdateService
                 return null;
             }
 
-            return new RedgeUpdateRequestModel() { ExternalId = content.Id };
+            return new RedgeUpdateRequestModel() 
+            {
+                ExternalId = content.Id,
+                Type = Enum.RedgeContentType.ARTICLE
+            };
         }
     }
 }
