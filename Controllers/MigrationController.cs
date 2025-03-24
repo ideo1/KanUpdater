@@ -1,4 +1,5 @@
-﻿using KanUpdater.Services.RedgeMigration.Jobs;
+﻿using KanUpdater.Services.Extensions;
+using KanUpdater.Services.RedgeMigration.Jobs;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
 
@@ -16,11 +17,18 @@ namespace KanUpdater.Controllers
 
         [HttpGet]
         [Route("subclasses")]
-        public async Task<IActionResult> MigrateSubclasses(CancellationToken ct)
+        public async Task<IActionResult> MigrateSubclass(CancellationToken ct)
         {
             var scheduler = await _schedulerFactory.GetScheduler();
+            var isAnyMigrationExecuted = await scheduler.IsThisGroupAlreadyExecuted(QuartzExtensions.QuartzMigrationGroupName);
+
+            if (isAnyMigrationExecuted)
+            {
+                return BadRequest("Migration job is already running");
+            }
+
             var job = JobBuilder.Create<MigrateSubclasses>()
-                        .WithIdentity("name", "group")
+                        .WithIdentity(MigrateSubclasses.Key)
                         .Build();
 
             var trigger = TriggerBuilder.Create()
