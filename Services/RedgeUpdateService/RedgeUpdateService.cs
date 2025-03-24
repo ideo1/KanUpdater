@@ -1,6 +1,7 @@
 ﻿using KanUpdater.Services.RedgeUpdateService.Enum;
 using KanUpdater.Services.RedgeUpdateService.Models;
 using Umbraco.Cms.Core.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace KanUpdater.Services.RedgeUpdateService
 {
