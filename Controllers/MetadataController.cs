@@ -1,5 +1,6 @@
 ﻿using KanUpdater.Models.Metadata;
 using KanUpdater.Services.RedgeUpdateService;
+using KanUpdater.Services.RedgeUpdateService.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KanUpdater.Controllers
@@ -19,7 +20,7 @@ namespace KanUpdater.Controllers
         /// <returns>Umbraco node metadata</returns>
         [HttpGet]
         [Route("getById")]      
-        public IActionResult GetMetadataByContentId([FromQuery] MetadataRequestModel request)
+        public ActionResult<RedgeUpdateRequestModel> GetMetadataByContentId([FromQuery] MetadataRequestModel request)
         {
             if (!ModelState.IsValid)
             {

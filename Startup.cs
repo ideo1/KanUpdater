@@ -7,6 +7,7 @@ using static Umbraco.Cms.Core.Constants;
 using Umbraco.Cms.Core.Cache;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using Quartz;
 
 namespace KanUpdater;
 
@@ -32,10 +33,25 @@ public class Startup
         .AddComposers()
         .Build();
 
+        services.AddQuartz(q =>
+        {
+            q.UseSimpleTypeLoader();
+            q.UseInMemoryStore();
+            q.UseDefaultThreadPool(tp =>
+            {
+                tp.MaxConcurrency = 10;
+            });
+        });
         services.AddControllers().AddJsonOptions(x =>
         {
             x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        }); ;
+        });
+
+        services.AddQuartzHostedService(options =>
+        {
+            // when shutting down we want jobs to complete gracefully
+            options.WaitForJobsToComplete = true;
+        });
     }
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
