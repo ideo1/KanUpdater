@@ -1,16 +1,18 @@
-﻿using KanUpdater.Services.RedgeUpdateService.Enum;
-using KanUpdater.Services.RedgeUpdateService.Models;
+﻿using KanUpdater.Services.RedgeUpdateService.Models;
+using Umbraco.Cms.Core.Mapping;
 using Umbraco.Cms.Core.Services;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace KanUpdater.Services.RedgeUpdateService
 {
     public class RedgeUpdateService : IRedgeUpdateService
     {
         private readonly IContentService _contentService;
-        public RedgeUpdateService(IContentService contentService)
+        private readonly IUmbracoMapper _mapper;
+        public RedgeUpdateService(IContentService contentService,
+                                  IUmbracoMapper mapper)
         {
             _contentService = contentService;
+            _mapper = mapper;
         }
         public RedgeUpdateRequestModel? GetRedgeUpdateModel(int contentId)
         {
@@ -21,12 +23,9 @@ namespace KanUpdater.Services.RedgeUpdateService
                 return null;
             }
 
-            return new RedgeUpdateRequestModel() 
-            {
-                ExternalId = content.Id,
-                Type = Enum.RedgeContentType.ARTICLE,
-                Platforms = new List<RedgePlatform>() { RedgePlatform.IOS_KIDS }
-            };
+            var res  = _mapper.Map<RedgeUpdateRequestModel>(new ContentMapModel() { AssignedContent = content});
+
+            return res;
         }
     }
 }
