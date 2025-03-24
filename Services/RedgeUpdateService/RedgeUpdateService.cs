@@ -23,7 +23,12 @@ namespace KanUpdater.Services.RedgeUpdateService
                 return null;
             }
 
-            var res  = _mapper.Map<RedgeUpdateRequestModel>(new ContentMapModel() { AssignedContent = content});
+            var contentAncestors = _contentService.GetAncestors(content);
+            var res  = _mapper.Map<RedgeUpdateRequestModel>(new ContentMapModel() 
+            {
+                AssignedContent = content, 
+                AssignedSubclass = contentAncestors.FirstOrDefault(x=>x.ContentType.Alias == "subClass")
+            });
 
             return res;
         }

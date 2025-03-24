@@ -10,6 +10,8 @@ namespace KanUpdater.Services.RedgeUpdateService.Models
         public Translations Translations { get; set; }
         [JsonProperty("originalTitle")]
         public string OriginalTitle { get; set; }
+        [JsonProperty("epgUuid")]
+        public string KlhCode { get; set; }
 
         [JsonProperty("active")]
         public bool Active { get; set; }

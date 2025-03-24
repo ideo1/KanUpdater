@@ -6,6 +6,8 @@ namespace KanUpdater.Services.RedgeUpdateService.NodeTypeFactory
     {
         public string TranslationTitle { get; set; } = "";
         public string TranslationDescription { get; set; } = "";
+        public string KlhCode { get; set; } = "kLHCode";
+        public string Category { get; set; } = "title";
         public RedgeContentType Type { get; set; }
     }
 }

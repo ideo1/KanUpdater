@@ -4,6 +4,7 @@ namespace KanUpdater.Services.RedgeUpdateService.Models
 {
     public class ContentMapModel
     {
-        public IContent AssignedContent { get; set; }
+        public required IContent AssignedContent { get; set; }
+        public  IContent AssignedSubclass { get; set; }
     }
 }

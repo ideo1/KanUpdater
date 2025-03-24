@@ -34,6 +34,9 @@ namespace KanUpdater.Services.RedgeUpdateService
                     Title = source.AssignedContent.GetValue<string>(childNodeType.TranslationTitle)
                 }
             };
+
+            target.Category = source.AssignedSubclass.GetValue<string>(childNodeType.Category);
+            target.KlhCode = source.AssignedContent.GetValue<string>(childNodeType.KlhCode);
         }
     }
 }
