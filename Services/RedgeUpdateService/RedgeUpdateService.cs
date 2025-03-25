@@ -24,11 +24,36 @@ namespace KanUpdater.Services.RedgeUpdateService
             }
 
             var contentAncestors = _contentService.GetAncestors(content);
-            var res  = _mapper.Map<RedgeUpdateRequestModel>(new ContentMapModel() 
+            var res = _mapper.Map<RedgeUpdateRequestModel>(new ContentMapModel()
             {
-                AssignedContent = content, 
-                AssignedSubclass = contentAncestors.FirstOrDefault(x=>x.ContentType.Alias == "subClass")
+                AssignedContent = content,
+                AssignedSubclass = contentAncestors.FirstOrDefault(x => x.ContentType.Alias == "subClass")
             });
+
+            return res;
+        }
+
+        public IEnumerable<RedgeUpdateRequestModel?> GetRedgeUpdateModels(IEnumerable<int> ids)
+        {
+            var contentItems = _contentService.GetByIds(ids.Distinct());
+
+            if (contentItems == null || !contentItems.Any())
+            {
+                return null;
+            }
+
+            var itemsToMap = contentItems.Select(x =>
+            {
+                var contentAncestors = _contentService.GetAncestors(x);
+
+                return new ContentMapModel()
+                {
+                    AssignedContent = x,
+                    AssignedSubclass = contentAncestors.FirstOrDefault(x => x.ContentType.Alias == "subClass")
+                };
+            });
+
+            var res = _mapper.MapEnumerable<ContentMapModel, RedgeUpdateRequestModel>(itemsToMap);
 
             return res;
         }
