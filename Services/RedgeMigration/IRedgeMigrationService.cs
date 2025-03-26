@@ -11,8 +11,8 @@ namespace KanUpdater.Services.RedgeMigration
     }
     public class RedgeMigrationService : IRedgeMigrationService
     {
-        private readonly MigrationConfiguration _migrationConfiguration;
-        public RedgeMigrationService(IOptions<MigrationConfiguration> migrationConfiguration)
+        private readonly RedgeMigrationConfiguration _migrationConfiguration;
+        public RedgeMigrationService(IOptions<RedgeMigrationConfiguration> migrationConfiguration)
         {
             _migrationConfiguration = migrationConfiguration.Value;
         }

@@ -7,8 +7,8 @@ namespace KanUpdater.Services.RedgeMigration
         public void Compose(IUmbracoBuilder builder)
         {
             builder.Services.AddTransient<IRedgeMigrationService, RedgeMigrationService>();
-            builder.Services.AddOptions<MigrationConfiguration>()
-                 .Bind(builder.Config.GetSection(MigrationConfiguration.ConfigurationName));
+            builder.Services.AddOptions<RedgeMigrationConfiguration>()
+                 .Bind(builder.Config.GetSection(RedgeMigrationConfiguration.ConfigurationName));
         }
     }
 }

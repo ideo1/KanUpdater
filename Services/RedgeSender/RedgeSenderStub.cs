@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace KanUpdater.Services.RedgeSender
 {
-    public class RedgeServiceStub : IRedgeSender
+    public class RedgeSenderStub : IRedgeSender
     {
         private readonly string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Stub", "Migration");
         public async Task SendDataAsync(IEnumerable<RedgeUpdateRequestModel> items)

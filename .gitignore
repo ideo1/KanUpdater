@@ -55,3 +55,4 @@ nunit-*.xml
 /umbraco/Data/TEMP
 
 .vs
+/Stub/Migration
