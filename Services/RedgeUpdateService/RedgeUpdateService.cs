@@ -49,7 +49,7 @@ namespace KanUpdater.Services.RedgeUpdateService
                 return new ContentMapModel()
                 {
                     AssignedContent = x,
-                    AssignedSubclass = contentAncestors.FirstOrDefault(x => x.ContentType.Alias == "subClass")
+                    AssignedSubclass = x.ContentType.Alias == "subClass" ? x : contentAncestors.FirstOrDefault(x => x.ContentType.Alias == "subClass")
                 };
             });
 
