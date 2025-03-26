@@ -1,10 +1,12 @@
 ﻿using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.PublishedContent;
 
 namespace KanUpdater.Services.RedgeUpdateService.NodeTypeFactory
 {
     public interface IChildNodeTypeFactoryRedge
     {
         ChildNodeTypeRedge GetInstance(IContent content);
+        ChildNodeTypeRedge GetInstance(IPublishedContent content);
     }
 
     public class ChildNodeTypeFactoryRedge : IChildNodeTypeFactoryRedge
@@ -20,11 +22,21 @@ namespace KanUpdater.Services.RedgeUpdateService.NodeTypeFactory
 
         public ChildNodeTypeRedge GetInstance(IContent content)
         {
+            return GetInstance(content.ContentType.Alias);
+        }
+
+        public ChildNodeTypeRedge GetInstance(IPublishedContent content)
+        {
+            return GetInstance(content.ContentType.Alias);
+        }
+
+        private ChildNodeTypeRedge GetInstance(string alias)
+        {
             var childNodeType = new ChildNodeTypeRedge();
 
             try
             {
-                childNodeType = content.ContentType.Alias switch
+                childNodeType = alias switch
                 {
                     "program" => GetChildNodeType(typeof(ProgramNodeTypeRedge)),
                     "subClass" => GetChildNodeType(typeof(SubclassNodeTypeRedge)),
@@ -33,7 +45,7 @@ namespace KanUpdater.Services.RedgeUpdateService.NodeTypeFactory
             }
             catch (Exception ex)
             {
-                _logger.LogError("Cant find ChildNodeType for type {0}", content.ContentType.Alias);
+                _logger.LogError("Cant find ChildNodeType for type {0}", alias);
             }
 
             return childNodeType;

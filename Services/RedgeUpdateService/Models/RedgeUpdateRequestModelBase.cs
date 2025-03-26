@@ -12,9 +12,9 @@ namespace KanUpdater.Services.RedgeUpdateService.Models
         [JsonProperty("type")]
         public RedgeContentType Type { get; set; }
         [JsonProperty("externalCreated")]
-        public DateTime ExternalCreated { get; set; }
+        public string ExternalCreated { get; set; }
 
         [JsonProperty("externalModified")]
-        public DateTime ExternalModified { get; set; }
+        public string ExternalModified { get; set; }
     }
 }

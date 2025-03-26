@@ -31,7 +31,7 @@ namespace KanUpdater.Services.RedgeMigration.Jobs
                     return;
                 }
 
-                var res = _redgeUpdateService.GetRedgeUpdateModels(channels.Subclasses.Select(x => x.UmbracoId));
+                var res = _redgeUpdateService.GetContentBasedRedgeUpdateModels(channels.Subclasses.Select(x => x.UmbracoId));
                 await _redgeSender.SendDataAsync(res);
 
                 await Task.Delay(25000); // simulate a long-running task

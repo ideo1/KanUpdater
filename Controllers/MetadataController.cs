@@ -19,7 +19,7 @@ namespace KanUpdater.Controllers
         /// <param name="request"></param>
         /// <returns>Umbraco node metadata</returns>
         [HttpGet]
-        [Route("getById")]      
+        [Route("contentId")]      
         public ActionResult<RedgeUpdateRequestModel> GetMetadataByContentId([FromQuery] MetadataRequestModel request)
         {
             if (!ModelState.IsValid)
@@ -27,7 +27,31 @@ namespace KanUpdater.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = _redgeUpdateService.GetRedgeUpdateModel(request.Id);
+            var result = _redgeUpdateService.GetContentBasedRedgeUpdateModel(request.Id);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Return metadata for specific Umbraco node
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>Umbraco node metadata</returns>
+        [HttpGet]
+        [Route("cacheId")]
+        public ActionResult<RedgeUpdateRequestModel> GetMetadataByCachetId([FromQuery] MetadataRequestModel request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = _redgeUpdateService.GetCachetBasedRedgeUpdateModel(request.Id);
 
             if (result == null)
             {
