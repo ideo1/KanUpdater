@@ -1,5 +1,6 @@
 ﻿using KanUpdater.Services.RedgeUpdateService.Models;
 using Umbraco.Cms.Core.Mapping;
+using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 
@@ -31,7 +32,7 @@ namespace KanUpdater.Services.RedgeUpdateService
             var res = _mapper.Map<RedgeUpdateRequestModel>(new ContentMapModel()
             {
                 AssignedContent = content,
-                AssignedSubclass = contentAncestors.FirstOrDefault(x => x.ContentType.Alias == "subClass")
+                AssignedSubclass = GetContentSubclass(content, contentAncestors)
             });
 
             return res;
@@ -51,7 +52,7 @@ namespace KanUpdater.Services.RedgeUpdateService
             var res = _mapper.Map<RedgeUpdateRequestModel>(new PublishedCacheMapModel()
             {
                 AssignedContent = content,
-                AssignedSubclass = contentAncestors.FirstOrDefault(x => x.ContentType.Alias == "subClass")
+                AssignedSubclass = contentAncestors.FirstOrDefault(content => content.ContentType.Alias == "subClass")
             });
 
             return res;
@@ -73,7 +74,7 @@ namespace KanUpdater.Services.RedgeUpdateService
                 return new ContentMapModel()
                 {
                     AssignedContent = x,
-                    AssignedSubclass = x.ContentType.Alias == "subClass" ? x : contentAncestors.FirstOrDefault(x => x.ContentType.Alias == "subClass")
+                    AssignedSubclass = GetContentSubclass(x, contentAncestors)
                 };
             });
 
@@ -107,5 +108,9 @@ namespace KanUpdater.Services.RedgeUpdateService
 
             return res;
         }
+
+        private IContent GetContentSubclass(IContent content, IEnumerable<IContent> contentAncestors) =>
+            content.ContentType.Alias == "subClass" ? content : contentAncestors.FirstOrDefault(content => content.ContentType.Alias == "subClass");
+
     }
 }

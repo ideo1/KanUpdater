@@ -1,5 +1,7 @@
-﻿using KanUpdater.Services.RedgeUpdateService.Models;
+﻿using KanUpdater.Services.RedgeUpdateService.Enum;
+using KanUpdater.Services.RedgeUpdateService.Models;
 using KanUpdater.Services.RedgeUpdateService.NodeTypeFactory;
+using Newtonsoft.Json;
 using System.Globalization;
 using Umbraco.Cms.Core.Mapping;
 using Umbraco.Cms.Core.Models;
@@ -38,7 +40,8 @@ namespace KanUpdater.Services.RedgeUpdateService
             {
                 HEB = new Translation()
                 {
-                    Title = source.AssignedContent.Value<string>(childNodeType.TranslationTitle)
+                    Title = source.AssignedContent.Value<string>(childNodeType.TranslationTitle),
+                    Description = source.AssignedContent.Value<string>(childNodeType.TranslationDescription)
                 }
             };
 
@@ -49,10 +52,18 @@ namespace KanUpdater.Services.RedgeUpdateService
                 target.Genres = genres.Select(x => x.Name);
             }
 
+            var tags = source.AssignedContent.Value<IEnumerable<IPublishedContent>>(childNodeType.Tags);
+
+            if (tags != null)
+            {
+                target.Tags = tags.Select(x => x.Name);
+            }
+
             target.Category = source.AssignedSubclass.Value<string>(childNodeType.Category);
             target.KlhCode = source.AssignedContent.Value<string>(childNodeType.KlhCode);
             target.ExternalCreated = source.AssignedContent.CreateDate.ToString("o", CultureInfo.InvariantCulture);
             target.ExternalModified = source.AssignedContent.UpdateDate.ToString("o", CultureInfo.InvariantCulture);
+            target.Platforms = MapPlatforms(source.AssignedContent.Value<IEnumerable<string>>(childNodeType.Platform));
         }
 
         private void Map(ContentMapModel source, RedgeUpdateRequestModel target, MapperContext context)
@@ -70,7 +81,8 @@ namespace KanUpdater.Services.RedgeUpdateService
             {
                 HEB = new Translation()
                 {
-                    Title = source.AssignedContent.GetValue<string>(childNodeType.TranslationTitle)
+                    Title = source.AssignedContent.GetValue<string>(childNodeType.TranslationTitle),
+                    Description = source.AssignedContent.GetValue<string>(childNodeType.TranslationDescription)
                 }
             };
 
@@ -86,6 +98,19 @@ namespace KanUpdater.Services.RedgeUpdateService
                 target.Genres = genresContent.Select(x => x.Name);
             }
 
+            var tagsContent = GetContentPickerData(source.AssignedContent, childNodeType.Tags);
+
+            if (tagsContent != null && tagsContent.Any())
+            {
+                target.Tags = tagsContent.Select(x => x.Name);
+            }
+
+            var platforms = source.AssignedContent.GetValue<string>(childNodeType.Platform);
+
+            if (!string.IsNullOrEmpty(platforms))
+            {
+                target.Platforms = MapPlatforms(JsonConvert.DeserializeObject<IEnumerable<string>>(platforms));
+            }
         }
 
         private IEnumerable<IPublishedContent> GetContentPickerData(IContent content, string pickerField)
@@ -111,6 +136,28 @@ namespace KanUpdater.Services.RedgeUpdateService
                         return umbracoContextReference.UmbracoContext.Content.GetById(guid);
                     })
                 .WhereNotNull();
+
+            return res;
+        }
+
+        private IEnumerable<RedgePlatform> MapPlatforms(IEnumerable<string> platforms)
+        {
+            var res = new List<RedgePlatform>();
+
+            if (platforms == null || !platforms.Any())
+            {
+                return res;
+            }
+
+            if (platforms.InvariantContains("App"))
+            {
+                res.AddRange(new[] { RedgePlatform.APPLE_TV, RedgePlatform.ANDROID_TV });
+            }
+
+            if (platforms.InvariantContains("Smart"))
+            {
+                res.Add(RedgePlatform.SMART_TV);
+            }
 
             return res;
         }

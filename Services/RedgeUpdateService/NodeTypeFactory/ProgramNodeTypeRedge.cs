@@ -6,6 +6,8 @@
         {
             TranslationTitle = "title";
             Type = Enum.RedgeContentType.SERIES;
+            TranslationDescription = "programContent";
+            Platform = "platform";
         }
     }
 }
