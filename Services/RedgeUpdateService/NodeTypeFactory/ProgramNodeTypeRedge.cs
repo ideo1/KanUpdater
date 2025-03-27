@@ -8,6 +8,7 @@
             Type = Enum.RedgeContentType.SERIES;
             TranslationDescription = "programContent";
             Platform = "platform";
+            AgeRestriction = "programAgeRestrictions";
         }
     }
 }

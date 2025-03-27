@@ -7,7 +7,7 @@ namespace KanUpdater.Services.RedgeUpdateService.Models
     public abstract class RedgeUpdateRequestModelBase
     {
         [JsonProperty("externalUuid")]
-        public int ExternalId { get; set; }
+        public string ExternalId { get; set; }
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("type")]
         public RedgeContentType Type { get; set; }

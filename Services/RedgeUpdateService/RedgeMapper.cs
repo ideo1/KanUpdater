@@ -27,7 +27,8 @@ namespace KanUpdater.Services.RedgeUpdateService
 
         private void Map(PublishedCacheMapModel source, RedgeUpdateRequestModel target, MapperContext context)
         {
-            target.ExternalId = source.AssignedContent.Id;
+            target.ExternalId = source.AssignedContent.Id.ToString();
+            target.ParentId = source.AssignedContent.Parent.Id.ToString();
             var childNodeType = _childNodeTypeFactoryRedge.GetInstance(source.AssignedContent);
 
             if (childNodeType == null)
@@ -59,6 +60,8 @@ namespace KanUpdater.Services.RedgeUpdateService
                 target.Tags = tags.Select(x => x.Name);
             }
 
+            var ageRestrictions = 
+
             target.Category = source.AssignedSubclass.Value<string>(childNodeType.Category);
             target.KlhCode = source.AssignedContent.Value<string>(childNodeType.KlhCode);
             target.ExternalCreated = source.AssignedContent.CreateDate.ToString("o", CultureInfo.InvariantCulture);
@@ -68,7 +71,8 @@ namespace KanUpdater.Services.RedgeUpdateService
 
         private void Map(ContentMapModel source, RedgeUpdateRequestModel target, MapperContext context)
         {
-            target.ExternalId = source.AssignedContent.Id;
+            target.ExternalId = source.AssignedContent.Id.ToString();
+            target.ParentId = source.AssignedContent.ParentId.ToString();
             var childNodeType = _childNodeTypeFactoryRedge.GetInstance(source.AssignedContent);
 
             if (childNodeType == null)

@@ -6,6 +6,8 @@ namespace KanUpdater.Services.RedgeUpdateService.Models
 {
     public class RedgeUpdateRequestModel : RedgeUpdateRequestModelBase
     {
+        [JsonProperty("parent_uid")]
+        public string ParentId { get; set; }
         [JsonProperty("translations")]
         public Translations Translations { get; set; }
         [JsonProperty("originalTitle")]
@@ -15,6 +17,8 @@ namespace KanUpdater.Services.RedgeUpdateService.Models
 
         [JsonProperty("active")]
         public bool Active { get; set; }
+        [JsonProperty("rating")]
+        public int AgeRestriction { get; set; }
 
         [JsonProperty("duration")]
         public int Duration { get; set; }
