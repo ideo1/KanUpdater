@@ -4,7 +4,8 @@
     {
         public SeasonNodeTypeRedge()
         {
-            TranslationTitle = "title";            
+            TranslationTitle = "title";
+            TranslationDescription = "seasonDescription";
             Type = Enum.RedgeContentType.SEASON;
             Number = "seasonNumber";
         }
