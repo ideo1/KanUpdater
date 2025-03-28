@@ -19,6 +19,8 @@ namespace KanUpdater.Services.RedgeUpdateService.Models
         public bool Active { get; set; }
         [JsonProperty("rating")]
         public int AgeRestriction { get; set; }
+        [JsonProperty("number")]
+        public int Number { get; set; }
 
         [JsonProperty("duration")]
         public int Duration { get; set; }

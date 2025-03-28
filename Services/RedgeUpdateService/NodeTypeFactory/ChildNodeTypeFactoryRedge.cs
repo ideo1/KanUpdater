@@ -40,6 +40,8 @@ namespace KanUpdater.Services.RedgeUpdateService.NodeTypeFactory
                 {
                     "program" => GetChildNodeType(typeof(ProgramNodeTypeRedge)),
                     "subClass" => GetChildNodeType(typeof(SubclassNodeTypeRedge)),
+                    "seasonSubject" => GetChildNodeType(typeof(SeasonNodeTypeRedge)),
+                    "videoItem" => GetChildNodeType(typeof(VideoNodeTypeRedge)),
                     _ => throw new InvalidOperationException()
                 };
             }

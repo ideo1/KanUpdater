@@ -54,11 +54,13 @@ namespace KanUpdater.Services.RedgeUpdateService
             target.AgeRestriction = GetPublishedTags(new Dictionary<string, IPublishedContent>() { { childNodeType.AgeRestriction, source.AssignedContent } })
                 .GetAgeRestriction();
 
+            target.Number = int.TryParse(source.AssignedContent.Value<string>(childNodeType.Number), out var number) ? number : 0;
             target.Category = source.AssignedSubclass.Value<string>(childNodeType.Category);
             target.KlhCode = source.AssignedContent.Value<string>(childNodeType.KlhCode);
             target.ExternalCreated = source.AssignedContent.CreateDate.ToString("o", CultureInfo.InvariantCulture);
             target.ExternalModified = source.AssignedContent.UpdateDate.ToString("o", CultureInfo.InvariantCulture);
             target.Platforms = MapPlatforms(source.Root.ContentType.Alias);
+            target.ImageFiles = GetMediaFilesFromCache(source, childNodeType);
         }
 
         private void Map(ContentMapModel source, RedgeUpdateRequestModel target, MapperContext context)
@@ -87,12 +89,41 @@ namespace KanUpdater.Services.RedgeUpdateService
             target.KlhCode = source.AssignedContent.GetValue<string>(childNodeType.KlhCode);
             target.ExternalCreated = source.AssignedContent.CreateDate.ToString("o", CultureInfo.InvariantCulture);
             target.ExternalModified = source.AssignedContent.UpdateDate.ToString("o", CultureInfo.InvariantCulture);
+            target.Number = int.TryParse(source.AssignedContent.GetValue<string>(childNodeType.Number), out var number) ? number : 0;
 
             target.Genres = GetContentTags(childNodeType.GetGenreTagsConetntMap(source));
             target.Tags = GetContentTags(childNodeType.GetGeneralTagsContentMap(source));
             target.AgeRestriction = GetContentTags(new Dictionary<string, IContent>() { { childNodeType.AgeRestriction, source.AssignedContent } })
                 .GetAgeRestriction();
             target.Platforms = MapPlatforms(source.Root.ContentType.Alias);
+        }
+
+        private IEnumerable<ImageFile> GetMediaFilesFromCache(PublishedCacheMapModel cacheModel, ChildNodeTypeRedge childNodeType)
+        {
+            if (childNodeType.MediaItemsMap == null || !childNodeType.MediaItemsMap.Any())
+            {
+                return Enumerable.Empty<ImageFile>();
+            }
+
+            var res = childNodeType.MediaItemsMap.Select(map =>
+            {
+                using var umbracoContextReference = _umbracoContextFactory.EnsureUmbracoContext();
+                var mediaSource = cacheModel.AssignedContent.Value<IPublishedContent>(map.Alias);
+
+                if (mediaSource == null)
+                {
+                    return null;
+                }
+
+                return new ImageFile
+                { 
+                    Aspect = map.Aspect,
+                    Type = map.Type,
+                    ImageUrl = mediaSource.Url()
+                };
+            }).WhereNotNull();
+
+            return res;
         }
 
         private IEnumerable<string> GetPublishedTags(Dictionary<string, IPublishedContent> publishedTagsMap)

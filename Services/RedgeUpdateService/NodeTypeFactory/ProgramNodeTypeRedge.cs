@@ -1,4 +1,5 @@
-﻿using KanUpdater.Services.RedgeUpdateService.Models;
+﻿using KanUpdater.Models;
+using KanUpdater.Services.RedgeUpdateService.Models;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
@@ -14,6 +15,23 @@ namespace KanUpdater.Services.RedgeUpdateService.NodeTypeFactory
             Platform = "platform";
             AgeRestriction = "programAgeRestrictions";
             CustomLabel = "roofTitle";
+            MediaItemsMap = new List<MediaItemMap>()
+            {
+                new MediaItemMap()
+                {
+                    Aspect = Enum.RedgeImageAspect._16x9,
+                    Type = Enum.RedgeImageType.COVER,
+                    Crop = ImageCrops.FullHDBackground,
+                    Alias = "programCoverImage"
+                }, 
+                new MediaItemMap() 
+                {
+                    Aspect = Enum.RedgeImageAspect._3x4,
+                    Type = Enum.RedgeImageType.POSTER,
+                    Crop = ImageCrops.AspectRatio13x20,
+                    Alias ="heroMobile"
+                }
+            };
         }
 
         public override Dictionary<string, IContent> GetGenreTagsConetntMap(ContentMapModel mapModel)

@@ -13,11 +13,21 @@ namespace KanUpdater.Services.RedgeUpdateService.NodeTypeFactory
         public string Category { get; set; } = "title";
         public string AgeRestriction { get; set; } = "";
         public string Platform { get; set; } = "";
+        public string Number { get; set; } = "";
         public string CustomLabel { get; set; } = "";
         public RedgeContentType Type { get; set; }
         public virtual Dictionary<string, IContent> GetGenreTagsConetntMap(ContentMapModel mapModel) => new Dictionary<string, IContent>();
         public virtual Dictionary<string, IPublishedContent> GetGenreTagsCacheMap(PublishedCacheMapModel mapModel) => new Dictionary<string, IPublishedContent>();
         public virtual Dictionary<string, IContent> GetGeneralTagsContentMap(ContentMapModel mapModel) => new Dictionary<string, IContent>();
         public virtual Dictionary<string, IPublishedContent> GetGeneralTagsCacheMap(PublishedCacheMapModel mapModel) => new Dictionary<string, IPublishedContent>();
+        public IEnumerable<MediaItemMap> MediaItemsMap { get; set; } =  Enumerable.Empty<MediaItemMap>();
+    }
+
+    public class MediaItemMap()
+    {
+        public RedgeImageAspect Aspect { get; set; }
+        public RedgeImageType Type { get; set; }
+        public string Alias { get; set; }
+        public string Crop { get; set; }
     }
 }
