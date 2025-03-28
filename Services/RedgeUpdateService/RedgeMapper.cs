@@ -113,7 +113,7 @@ namespace KanUpdater.Services.RedgeUpdateService
                 res.AddRange(tags.Select(x => x.Name));
             }
 
-            return res;
+            return res.Distinct();
         }
 
         private IEnumerable<string> GetContentTags(Dictionary<string, IContent> publishedTagsMap)
@@ -137,7 +137,7 @@ namespace KanUpdater.Services.RedgeUpdateService
                 res.AddRange(tags.Select(x => x.Name));
             }
 
-            return res;
+            return res.Distinct();
         }
 
         private IEnumerable<IPublishedContent> GetContentPickerData(IContent content, string pickerField)
@@ -169,7 +169,7 @@ namespace KanUpdater.Services.RedgeUpdateService
                 })
                 .WhereNotNull();
 
-            return res;
+            return res.Distinct();
         }
 
         private IEnumerable<RedgePlatform> MapPlatforms(string rootAlias)
