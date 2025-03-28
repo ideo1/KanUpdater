@@ -13,6 +13,7 @@ namespace KanUpdater.Services.RedgeUpdateService.NodeTypeFactory
             TranslationDescription = "programContent";
             Platform = "platform";
             AgeRestriction = "programAgeRestrictions";
+            CustomLabel = "roofTitle";
         }
 
         public override Dictionary<string, IContent> GetGenreTagsConetntMap(ContentMapModel mapModel)

@@ -7,6 +7,7 @@ using Umbraco.Cms.Core.Mapping;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Web;
+using Umbraco.Extensions;
 using static Umbraco.Cms.Core.Constants.Conventions;
 
 namespace KanUpdater.Services.RedgeUpdateService
@@ -38,6 +39,7 @@ namespace KanUpdater.Services.RedgeUpdateService
             }
 
             target.Type = childNodeType.Type;
+            target.CustomLabel = source.AssignedContent.Value<string>(childNodeType.CustomLabel);
             target.Translations = new Translations
             {
                 HEB = new Translation()
@@ -71,6 +73,7 @@ namespace KanUpdater.Services.RedgeUpdateService
             }
 
             target.Type = childNodeType.Type;
+            target.CustomLabel = source.AssignedContent.GetValue<string>(childNodeType.CustomLabel);
             target.Translations = new Translations
             {
                 HEB = new Translation()
