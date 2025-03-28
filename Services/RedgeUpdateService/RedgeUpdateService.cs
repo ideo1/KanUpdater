@@ -28,11 +28,13 @@ namespace KanUpdater.Services.RedgeUpdateService
                 return null;
             }
 
-            var contentAncestors = _contentService.GetAncestors(content);
+            var contentAncestors = _contentService.GetAncestors(content).OrderBy(x=>x.Level);
             var res = _mapper.Map<RedgeUpdateRequestModel>(new ContentMapModel()
             {
                 AssignedContent = content,
-                AssignedSubclass = GetContentSubclass(content, contentAncestors)
+                AssignedSubclass = GetAncestorOrSelf(content, contentAncestors, "subClass"),
+                AssignedProgram = GetAncestorOrSelf(content, contentAncestors, "program"),
+                Root = contentAncestors.FirstOrDefault()
             });
 
             return res;
@@ -52,7 +54,9 @@ namespace KanUpdater.Services.RedgeUpdateService
             var res = _mapper.Map<RedgeUpdateRequestModel>(new PublishedCacheMapModel()
             {
                 AssignedContent = content,
-                AssignedSubclass = contentAncestors.FirstOrDefault(content => content.ContentType.Alias == "subClass")
+                AssignedSubclass = contentAncestors.FirstOrDefault(content => content.ContentType.Alias == "subClass"),
+                AssignedProgram = contentAncestors.FirstOrDefault(content => content.ContentType.Alias == "program"),
+                Root = contentAncestors.FirstOrDefault()
             });
 
             return res;
@@ -69,12 +73,14 @@ namespace KanUpdater.Services.RedgeUpdateService
 
             var itemsToMap = contentItems.Select(x =>
             {
-                var contentAncestors = _contentService.GetAncestors(x);
+                var contentAncestors = _contentService.GetAncestors(x).OrderBy(x=>x.Level);
 
                 return new ContentMapModel()
                 {
                     AssignedContent = x,
-                    AssignedSubclass = GetContentSubclass(x, contentAncestors)
+                    AssignedSubclass = GetAncestorOrSelf(x, contentAncestors, "subClass"),
+                    AssignedProgram = GetAncestorOrSelf(x, contentAncestors, "program"),
+                    Root = contentAncestors.FirstOrDefault()
                 };
             });
 
@@ -100,7 +106,9 @@ namespace KanUpdater.Services.RedgeUpdateService
                 return new PublishedCacheMapModel()
                 {
                     AssignedContent = x,
-                    AssignedSubclass = contentAncestors.FirstOrDefault(x => x.ContentType.Alias == "subClass")
+                    AssignedSubclass = contentAncestors.FirstOrDefault(x => x.ContentType.Alias == "subClass"),
+                    AssignedProgram = contentAncestors.FirstOrDefault(content => content.ContentType.Alias == "program"),
+                    Root = x.Root()
                 };
             });
 
@@ -109,8 +117,8 @@ namespace KanUpdater.Services.RedgeUpdateService
             return res;
         }
 
-        private IContent GetContentSubclass(IContent content, IEnumerable<IContent> contentAncestors) =>
-            content.ContentType.Alias == "subClass" ? content : contentAncestors.FirstOrDefault(content => content.ContentType.Alias == "subClass");
+        private IContent GetAncestorOrSelf(IContent content, IEnumerable<IContent> contentAncestors, string doctype) =>
+            content.ContentType.Alias == doctype ? content : contentAncestors.FirstOrDefault(content => content.ContentType.Alias == doctype);
 
     }
 }

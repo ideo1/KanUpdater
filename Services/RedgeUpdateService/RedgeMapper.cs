@@ -1,12 +1,13 @@
-﻿using KanUpdater.Services.RedgeUpdateService.Enum;
+﻿using KanUpdater.Services.Extensions;
+using KanUpdater.Services.RedgeUpdateService.Enum;
 using KanUpdater.Services.RedgeUpdateService.Models;
 using KanUpdater.Services.RedgeUpdateService.NodeTypeFactory;
-using Newtonsoft.Json;
 using System.Globalization;
 using Umbraco.Cms.Core.Mapping;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Web;
+using static Umbraco.Cms.Core.Constants.Conventions;
 
 namespace KanUpdater.Services.RedgeUpdateService
 {
@@ -46,27 +47,16 @@ namespace KanUpdater.Services.RedgeUpdateService
                 }
             };
 
-            var genres = source.AssignedContent.Value<IEnumerable<IPublishedContent>>(childNodeType.Genres);
-
-            if (genres != null)
-            {
-                target.Genres = genres.Select(x => x.Name);
-            }
-
-            var tags = source.AssignedContent.Value<IEnumerable<IPublishedContent>>(childNodeType.Tags);
-
-            if (tags != null)
-            {
-                target.Tags = tags.Select(x => x.Name);
-            }
-
-            var ageRestrictions = 
+            target.Genres = GetPublishedTags(childNodeType.GetGenreTagsCacheMap(source));
+            target.Tags = GetPublishedTags(childNodeType.GetGeneralTagsCacheMap(source));
+            target.AgeRestriction = GetPublishedTags(new Dictionary<string, IPublishedContent>() { { childNodeType.AgeRestriction, source.AssignedContent } })
+                .GetAgeRestriction();
 
             target.Category = source.AssignedSubclass.Value<string>(childNodeType.Category);
             target.KlhCode = source.AssignedContent.Value<string>(childNodeType.KlhCode);
             target.ExternalCreated = source.AssignedContent.CreateDate.ToString("o", CultureInfo.InvariantCulture);
             target.ExternalModified = source.AssignedContent.UpdateDate.ToString("o", CultureInfo.InvariantCulture);
-            target.Platforms = MapPlatforms(source.AssignedContent.Value<IEnumerable<string>>(childNodeType.Platform));
+            target.Platforms = MapPlatforms(source.Root.ContentType.Alias);
         }
 
         private void Map(ContentMapModel source, RedgeUpdateRequestModel target, MapperContext context)
@@ -95,26 +85,59 @@ namespace KanUpdater.Services.RedgeUpdateService
             target.ExternalCreated = source.AssignedContent.CreateDate.ToString("o", CultureInfo.InvariantCulture);
             target.ExternalModified = source.AssignedContent.UpdateDate.ToString("o", CultureInfo.InvariantCulture);
 
-            var genresContent = GetContentPickerData(source.AssignedContent, childNodeType.Genres);
+            target.Genres = GetContentTags(childNodeType.GetGenreTagsConetntMap(source));
+            target.Tags = GetContentTags(childNodeType.GetGeneralTagsContentMap(source));
+            target.AgeRestriction = GetContentTags(new Dictionary<string, IContent>() { { childNodeType.AgeRestriction, source.AssignedContent } })
+                .GetAgeRestriction();
+            target.Platforms = MapPlatforms(source.Root.ContentType.Alias);
+        }
 
-            if (genresContent != null && genresContent.Any())
+        private IEnumerable<string> GetPublishedTags(Dictionary<string, IPublishedContent> publishedTagsMap)
+        {
+            if (publishedTagsMap == null || !publishedTagsMap.Any())
             {
-                target.Genres = genresContent.Select(x => x.Name);
+                return Enumerable.Empty<string>();
             }
 
-            var tagsContent = GetContentPickerData(source.AssignedContent, childNodeType.Tags);
+            var res = new List<string>();
 
-            if (tagsContent != null && tagsContent.Any())
+            foreach (var map in publishedTagsMap)
             {
-                target.Tags = tagsContent.Select(x => x.Name);
+                var tags = map.Value.Value<IEnumerable<IPublishedContent>>(map.Key);
+
+                if (tags == null || !tags.Any())
+                {
+                    continue;
+                }
+
+                res.AddRange(tags.Select(x => x.Name));
             }
 
-            var platforms = source.AssignedContent.GetValue<string>(childNodeType.Platform);
+            return res;
+        }
 
-            if (!string.IsNullOrEmpty(platforms))
+        private IEnumerable<string> GetContentTags(Dictionary<string, IContent> publishedTagsMap)
+        {
+            if (publishedTagsMap == null || !publishedTagsMap.Any())
             {
-                target.Platforms = MapPlatforms(JsonConvert.DeserializeObject<IEnumerable<string>>(platforms));
+                return Enumerable.Empty<string>();
             }
+
+            var res = new List<string>();
+
+            foreach (var map in publishedTagsMap)
+            {
+                var tags = GetContentPickerData(map.Value, map.Key);
+
+                if (tags == null || !tags.Any())
+                {
+                    continue;
+                }
+
+                res.AddRange(tags.Select(x => x.Name));
+            }
+
+            return res;
         }
 
         private IEnumerable<IPublishedContent> GetContentPickerData(IContent content, string pickerField)
@@ -123,44 +146,45 @@ namespace KanUpdater.Services.RedgeUpdateService
 
             if (string.IsNullOrEmpty(pickerData))
             {
-                return null;
+                return Enumerable.Empty<IPublishedContent>(); ;
             }
 
+            return GetTagsAsPublishedContent(pickerData);
+        }
+
+        private IEnumerable<IPublishedContent> GetTagsAsPublishedContent(string pickerData)
+        {
             using var umbracoContextReference = _umbracoContextFactory.EnsureUmbracoContext();
             var res = pickerData.Split(',')
                 .Select(x =>
+                {
+                    var guidString = x.Replace("umb://document/", "");
+
+                    if (!Guid.TryParse(guidString, out var guid))
                     {
-                        var guidString = x.Replace("umb://document/", "");
+                        return null;
+                    }
 
-                        if (!Guid.TryParse(guidString, out var guid))
-                        {
-                            return null;
-                        }
-
-                        return umbracoContextReference.UmbracoContext.Content.GetById(guid);
-                    })
+                    return umbracoContextReference.UmbracoContext.Content.GetById(guid);
+                })
                 .WhereNotNull();
 
             return res;
         }
 
-        private IEnumerable<RedgePlatform> MapPlatforms(IEnumerable<string> platforms)
+        private IEnumerable<RedgePlatform> MapPlatforms(string rootAlias)
         {
-            var res = new List<RedgePlatform>();
+            var res = new List<RedgePlatform>() { RedgePlatform.SMART_TV, RedgePlatform.APPLE_TV, RedgePlatform.ANDROID_TV };
 
-            if (platforms == null || !platforms.Any())
+            switch (rootAlias)
             {
-                return res;
-            }
+                case "homeKids":
+                    res.AddRange(new[] { RedgePlatform.IOS_KIDS, RedgePlatform.ANDROID_KIDS });
+                    break;
 
-            if (platforms.InvariantContains("App"))
-            {
-                res.AddRange(new[] { RedgePlatform.APPLE_TV, RedgePlatform.ANDROID_TV });
-            }
-
-            if (platforms.InvariantContains("Smart"))
-            {
-                res.Add(RedgePlatform.SMART_TV);
+                default:
+                    res.AddRange(new[] { RedgePlatform.IOS, RedgePlatform.ANDROID });
+                    break;
             }
 
             return res;
